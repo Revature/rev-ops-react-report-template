@@ -1,8 +1,8 @@
 {
-  "name": "rev-ops-component",
+  "name": "rev-ops-report",
   "version": "1.0.0",
   "private": true,
-  "description": "Rev-Ops custom React component template",
+  "description": "Rev-Ops custom report component template",
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"

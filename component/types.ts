@@ -1,46 +1,21 @@
 /**
- * Props contract for Rev-Ops process components.
+ * Props contract for Rev-Ops custom report components.
  *
  * Your default export receives these props when rendered
- * inside a process flow. Components are fully self-contained:
- * they handle UI, data fetching, mutations, and validation.
+ * inside a report view. The component is fully self-contained
+ * and responsible for rendering the report data.
  */
 
-export interface ComponentContext {
-  objectApiName: string;
-  processApiName: string;
-  executionId: string;
-  recordId: string;
-  userId: string;
-}
+export interface ReportProps {
+  /** Fetched report rows. */
+  data: Record<string, unknown>[];
 
-export interface FieldDefinition {
-  api_name: string;
-  name: string;
-  field_type: string;
-  required?: boolean;
-  options?: Record<string, unknown>;
-}
+  /** Column keys in the order returned by the query. */
+  columns: string[];
 
-export interface ProcessComponentProps {
-  /** Full record data from DB. */
-  record: Record<string, any>;
+  /** Total row count (may be larger than data.length if paginated). */
+  total: number;
 
-  /** Field definitions for the object. */
-  fields: FieldDefinition[];
-
-  /** Execution metadata. */
-  context: ComponentContext;
-
-  /** Result from the server-side pre-process (null if no pre-process). */
-  preProcessResult: Record<string, any> | null;
-
-  /** Signal success — optionally pass result data. */
-  onComplete: (result?: Record<string, any>) => void;
-
-  /** Signal cancellation. */
-  onCancel: () => void;
-
-  /** Signal error. */
-  onError: (error: string) => void;
+  /** Display name of the report. */
+  reportName: string;
 }

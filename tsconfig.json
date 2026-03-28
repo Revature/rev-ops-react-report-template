@@ -6,9 +6,10 @@
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "component"
   },
-  "include": ["component/**/*.ts", "component/**/*.tsx"]
+  "include": ["component/**/*.ts", "component/**/*.tsx", "component/**/*.json"]
 }

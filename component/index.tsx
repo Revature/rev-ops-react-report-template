@@ -1,64 +1,86 @@
-import { useState } from "react";
-import type { ProcessComponentProps } from "./types";
+import type { ReportProps } from "./types";
+import sampleData from "./data.json";
 
 /**
- * Custom Process Component
+ * Custom Report Component
  *
- * This component is fully self-contained. It receives record data,
- * field definitions, and execution context via props. Use fetch()
- * for API calls (same browser session = same auth cookies).
+ * Renders report data as a styled table. Modify this component
+ * to create a completely custom layout for your report.
  *
  * Available props:
- *   record           — full record data from DB
- *   fields           — field definitions for the object
- *   context          — execution metadata (objectApiName, processApiName, etc.)
- *   preProcessResult — result from server-side pre-process (null if none)
- *   onComplete       — call when done (optionally pass result data)
- *   onCancel         — call to cancel the process
- *   onError          — call to signal an error
+ *   data       — array of row objects from the database query
+ *   columns    — column keys in query order
+ *   total      — total row count (for pagination info)
+ *   reportName — display name of this report
+ *
+ * During development in the IDE, `data.json` is pre-populated
+ * with 5 sample rows from your SQL query. The component uses
+ * that sample data as a fallback when `data` is empty.
  */
-export default function MyComponent({
-  record,
-  fields,
-  context,
-  preProcessResult,
-  onComplete,
-  onCancel,
-  onError,
-}: ProcessComponentProps) {
-  const [loading, setLoading] = useState(false);
+export default function Report({ data, columns, total, reportName }: ReportProps) {
+  const rows = data.length > 0 ? data : (sampleData as Record<string, unknown>[]);
 
-  async function handleSubmit() {
-    setLoading(true);
-    try {
-      // Example: update the record via API
-      const res = await fetch(
-        `/api/data/${context.objectApiName}/${context.recordId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            /* your updates */
-          }),
-        }
-      );
-      if (!res.ok) throw new Error("Update failed");
-      onComplete({ success: true });
-    } catch (err) {
-      onError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
+  function formatHeader(key: string): string {
+    return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   }
 
   return (
-    <div>
-      <h2>Process: {context.processApiName}</h2>
-      <p>Record: {record.name ?? context.recordId}</p>
-      <button onClick={handleSubmit} disabled={loading}>
-        {loading ? "Processing..." : "Submit"}
-      </button>
-      <button onClick={onCancel}>Cancel</button>
+    <div style={{ fontFamily: "system-ui, sans-serif", padding: "16px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "12px" }}>
+        <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#111827" }}>{reportName}</h2>
+        <span style={{ fontSize: "12px", color: "#6b7280" }}>{total} row{total !== 1 ? "s" : ""}</span>
+      </div>
+
+      <div style={{ overflowX: "auto", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+          <thead>
+            <tr style={{ background: "#f9fafb" }}>
+              {columns.map((col) => (
+                <th
+                  key={col}
+                  style={{
+                    padding: "8px 12px",
+                    textAlign: "left",
+                    fontWeight: 600,
+                    color: "#374151",
+                    borderBottom: "1px solid #e5e7eb",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {formatHeader(col)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr
+                key={i}
+                style={{ background: i % 2 === 0 ? "#ffffff" : "#f9fafb" }}
+              >
+                {columns.map((col) => (
+                  <td
+                    key={col}
+                    style={{
+                      padding: "8px 12px",
+                      color: "#1f2937",
+                      borderBottom: "1px solid #f3f4f6",
+                      maxWidth: "280px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {row[col] != null ? String(row[col]) : (
+                      <span style={{ color: "#d1d5db" }}>—</span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
