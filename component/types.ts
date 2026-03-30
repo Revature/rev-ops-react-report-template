@@ -2,20 +2,19 @@
  * Props contract for Rev-Ops custom report components.
  *
  * Your default export receives these props when rendered
- * inside a report view. The component is fully self-contained
- * and responsible for rendering the report data.
+ * inside the Rev-Ops report viewer.
  */
 
 export interface ReportProps {
-  /** Fetched report rows. */
+  /** Array of row objects from the database query */
   data: Record<string, unknown>[];
 
-  /** Column keys in the order returned by the query. */
+  /** Column keys in the order returned by the query */
   columns: string[];
 
-  /** Total row count (may be larger than data.length if paginated). */
+  /** Total row count (may exceed data.length if paginated) */
   total: number;
 
-  /** Display name of the report. */
+  /** Display name of the report */
   reportName: string;
 }
